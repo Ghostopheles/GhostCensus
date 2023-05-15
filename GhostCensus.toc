@@ -1,0 +1,29 @@
+## Interface: 100105
+## Title: |cff3279a8GhostCensus|r
+## Notes: Cadaverous tools for collecting census data.
+## Author: Ghost
+## Version: 1
+## SavedVariables: GhostCensusDB
+
+## RequiredDeps: GhostTools, totalRP3
+
+## IconTexture: Interface\AddOns\totalRP3\Resources\policegar
+
+## AddonCompartmentFunc: GHOSTCENSUS_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: GHOSTCENSUS_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: GHOSTCENSUS_OnAddonCompartmentLeave
+
+## X-Website: https://kivatech.io
+
+GhostCensus.lua
+GhostCensusAddonCompartment.lua
+
+Table/CensusTable.lua
+
+Core/Global.lua
+Core/Database.lua
+Core/SlashCommands.lua
+Core/EventListener.lua
+
+Integrations/Integrations.lua
+Integrations/TRP3Scanner.lua
