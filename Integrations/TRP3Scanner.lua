@@ -1,6 +1,6 @@
 GhostCensus.Integrations.TRP3.MapScan = {};
 
-local moduleName = "CensusMapScan";
+local moduleName = "MapScan";
 
 local broadcast = AddOn_TotalRP3.Communications.broadcast;
 local Map = AddOn_TotalRP3.Map;
@@ -82,7 +82,7 @@ Ghost.Events.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, 
 
         local dataSheet = generateDataSheet(sender, pos, poiInfo);
         local dataSheetName = "TRP3MapScanData"
-        local source = GhostCensus.Database.Sources.TOTALRP3;
+        local source = GhostCensus.Database.Sources["TRP3_MAP_SCAN"];
 
         GhostCensus.Database:AddPlayerEntry(sender, source, dataSheet, dataSheetName);
         GhostCensusScanner.charactersFound = GhostCensusScanner.charactersFound + 1;

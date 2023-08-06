@@ -20,10 +20,13 @@ GhostCensusAddonCompartment.lua
 
 Table/CensusTable.lua
 
+Integrations/Integrations.lua
+Integrations/TRP3Data.lua
+
 Core/Global.lua
 Core/Database.lua
 Core/SlashCommands.lua
 Core/EventListener.lua
+Core/DisplayFrame.lua
 
-Integrations/Integrations.lua
-Integrations/TRP3Scanner.lua
+#Integrations/TRP3Scanner.lua
