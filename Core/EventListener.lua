@@ -68,6 +68,8 @@ function GhostCensus.EventListener:RegisterEvents()
             self:RegisterEvent(event);
         end
     end
+
+    self:RegisterEvent("PLAYER_FLAGS_CHANGED");
 end
 
 function GhostCensus.EventListener:IsValidPrefix(prefix)
@@ -86,6 +88,11 @@ function GhostCensus.EventListener:OnEvent(event, ...)
 
         self:OnLoad()
     elseif C_Map.GetBestMapForUnit("player") ~= 118 then
+        return;
+    elseif event == "PLAYER_FLAGS_CHANGED" and (... == "player") then
+        if UnitIsAFK("player") then
+            FlashClientIcon();
+        end
         return;
     elseif tContains(self.CombatLogEvents, event) then
         return self:HandleCombatLogEvent();
