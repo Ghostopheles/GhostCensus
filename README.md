@@ -24,6 +24,7 @@ On top of the things listed above, when used alongside TotalRP3, it also collect
 - Profile Icon
 - Custom Guild
 - Voice Reference
+- Trial Account Status (Paid sub vs trial character)
 
 This addon was used to collect population data at Tournament of Ages 2023 on MoonGuard.
 
