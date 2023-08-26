@@ -87,8 +87,6 @@ function GhostCensus.EventListener:OnEvent(event, ...)
         end
 
         self:OnLoad()
-    elseif C_Map.GetBestMapForUnit("player") ~= 118 then
-        return;
     elseif event == "PLAYER_FLAGS_CHANGED" and (... == "player") then
         if UnitIsAFK("player") then
             FlashClientIcon();

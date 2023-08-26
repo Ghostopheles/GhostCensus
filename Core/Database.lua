@@ -204,10 +204,6 @@ function DB:Init()
 end
 
 function DB:AddPlayerEntryByGUID(guid, source, customDatasheet, customDatasheetName, timestamp)
-    if C_Map.GetBestMapForUnit("player") ~= 118 then
-        return;
-    end
-
     if not guid or GhostCensus.UnitGUIDIsCurrentPlayer(guid) or not C_PlayerInfo.GUIDIsPlayer(guid) then
         return;
     end
