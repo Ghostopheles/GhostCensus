@@ -24,5 +24,3 @@ Core/Database.lua
 Core/SlashCommands.lua
 Core/EventListener.lua
 Core/DisplayFrame.lua
-
-#Integrations/TRP3Scanner.lua
