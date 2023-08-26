@@ -5,13 +5,9 @@
 ## Version: 1
 ## SavedVariables: GhostCensusDB
 
-## RequiredDeps: GhostTools, totalRP3
+## RequiredDeps: totalRP3
 
 ## IconTexture: Interface\AddOns\totalRP3\Resources\policegar
-
-## AddonCompartmentFunc: GHOSTCENSUS_OnAddonCompartmentClick
-## AddonCompartmentFuncOnEnter: GHOSTCENSUS_OnAddonCompartmentEnter
-## AddonCompartmentFuncOnLeave: GHOSTCENSUS_OnAddonCompartmentLeave
 
 ## X-Website: https://kivatech.io
 

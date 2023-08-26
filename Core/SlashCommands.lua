@@ -24,7 +24,7 @@ function SlashCmdList.GCS(msg)
         return
     end
 
-    local success, result = xpcall(func, Ghost.ErrorHandler, unpack(args))
+    local success, result = pcall(func, unpack(args))
     assert(success, "Error while executing registered function...\n" .. (result or ""))
     GhostCensus.Print(moduleName, result)
 end
