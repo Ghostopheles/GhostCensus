@@ -1,2 +1,4 @@
 *.ipynb
 .vscode
+Integrations/TRP3Scanner.lua
+Integrations/TRP3Scanner.lua2
