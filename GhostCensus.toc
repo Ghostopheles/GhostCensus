@@ -12,7 +12,6 @@
 ## X-Website: https://kivatech.io
 
 GhostCensus.lua
-GhostCensusAddonCompartment.lua
 
 Table/CensusTable.lua
 
