@@ -1,5 +1,5 @@
 # GhostCensus
-An addon built for collecting population data in World of Warcraft.
+An addon built for collecting population data in World of Warcraft. Not for use in any sort of AI application.
 
 This addon listens to a bunch of different events in the game and uses them to grab information from every character it sees.
 Here's what it collects:
