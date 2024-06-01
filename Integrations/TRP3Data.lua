@@ -1,38 +1,38 @@
-GhostCensus.Integrations.TRP3.DataGatherer = {};
+---@class GhostCensusTRP3Datasheet
+---@field UsesCustomPronouns boolean
+---@field UsesCustomGuild boolean
+---@field UsesCustomVoiceReference boolean
+---@field Icon string
+---@field IsTrial boolean
 
-function GhostCensus.Integrations.TRP3.DataGatherer:GenerateTRP3DataSheet(guid)
-    if not IsAddOnLoaded("TotalRP3") or not guid then
+GhostCensus.TRP3 = {};
+
+---@return GhostCensusTRP3Datasheet?
+function GhostCensus.TRP3:GenerateDataSheet(guid)
+    if not C_AddOns.IsAddOnLoaded("TotalRP3") or not guid then
         return;
     end
 
     local player = AddOn_TotalRP3.Player.CreateFromGUID(guid);
 
-    if player:IsCurrentUser() then
+    if player:IsCurrentUser() or not player:GetProfile() then
         return;
     end
 
-    local dataSheet = {};
+    local usesPronouns = player:GetCustomPronouns() ~= nil;
 
-    local success, accountType = pcall(player.GetAccountType, player);
+    local customGuild = player:GetCustomGuildMembership();
+    local usesGuild = customGuild.name ~= nil and customGuild.rank ~= nil;
 
-    if success then
-        dataSheet.IsTrial = player:IsOnATrialAccount() or nil;
-        dataSheet.AccountType = accountType;
-    end
+    local usesVoiceRef = player:GetCustomVoiceReference() ~= nil;
+    local customIcon = player:GetCustomIcon();
+    local isTrial = player:IsOnATrialAccount();
 
-    dataSheet.ProfileID = player:GetProfileID() or nil;
-    dataSheet.CharacterID = player:GetCharacterID() or nil;
-    dataSheet.RoleplayStatus = player:GetRoleplayStatus() or nil;
-    dataSheet.FormattedName = player:GenerateFormattedName(TRP3_PlayerNameFormat.Colored) or nil;
-    dataSheet.FirstName = player:GetFirstName() or nil;
-    dataSheet.LastName = player:GetLastName() or nil;
-    dataSheet.ShortTitle = player:GetTitle() or nil;
-    dataSheet.FullTitle = player:GetFullTitle() or nil;
-    dataSheet.RoleplayExperience = player:GetRoleplayExperience() or nil;
-    dataSheet.Pronouns = player:GetCustomPronouns() or nil;
-    dataSheet.Icon = player:GetCustomIcon() or nil;
-    dataSheet.CustomGuild = player:GetCustomGuildMembership() or nil;
-    dataSheet.VoiceReference = player:GetCustomVoiceReference() or nil;
-
-    return dataSheet;
+    return {
+        UsesCustomPronouns = usesPronouns,
+        UsesCustomGuild = usesGuild,
+        UsesCustomVoiceReference = usesVoiceRef,
+        Icon = customIcon,
+        IsTrial = isTrial,
+    };
 end

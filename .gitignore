@@ -1,3 +1,4 @@
 *.ipynb
 .vscode
 Integrations/TRP3Scanner.lua
+Libs/

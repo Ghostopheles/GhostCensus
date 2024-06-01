@@ -1,3 +1,21 @@
+local function InitGlobals()
+    local playerName = GetUnitName("player", false);
+    local playerRealm = GetNormalizedRealmName();
+    local playerGUID = UnitGUID("player");
+    local playerNameNormalized = playerName .. "-" .. playerRealm;
+
+    GhostCensus.Globals = {
+        PlayerName = playerName,
+        PlayerRealm = playerRealm,
+        PlayerGUID = playerGUID,
+        PlayerNameNormalized = playerNameNormalized,
+    };
+
+    GhostCensus.Database:Init();
+end
+
+EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", InitGlobals);
+
 function GhostCensus.GeneratePrintPrefix(moduleName, addNewLine)
     local prefix;
 
@@ -42,7 +60,7 @@ function GhostCensus.Dump(module, message)
 end
 
 function GhostCensus.UnitNameIsCurrentPlayer(name)
-    return name == GhostCensus.Globals.PlayerName or name == GhostCensus.Globals.PlayerNameNoRealm;
+    return name == GhostCensus.Globals.PlayerNameNormalized or name == GhostCensus.Globals.PlayerName;
 end
 
 function GhostCensus.UnitGUIDIsCurrentPlayer(guid)

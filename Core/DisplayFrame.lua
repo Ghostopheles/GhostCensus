@@ -5,8 +5,8 @@ function GhostCensus.Display:OnLoad()
     self:SetSize(100, 100);
     self:ClearAllPoints();
 
-    if Ghost and Ghost.NetWatcher then
-        self:SetPoint("BOTTOMLEFT", Ghost.NetWatcher, "TOPLEFT", 0, 5);
+    if Ghost and Ghost.NetWatch then
+        self:SetPoint("BOTTOMLEFT", Ghost.NetWatch, "TOPLEFT", 0, 5);
     else
         self:SetPoint("LEFT", UIParent, "LEFT", 20, 0);
     end
@@ -67,9 +67,9 @@ function GhostCensus.Display:Update()
     end
 
     local displayTitle = "|cff3279a8GhostCensus|r"
-    local uniqueCharacters = self.DB.UniqueCharactersSeen;
+    local uniqueCharacters = self.DB.Metrics.UniqueCharacters;
 
-    local displayString = string.format("Unique Characters Seen: %s", uniqueCharacters);
+    local displayString = string.format("Unique Characters Seen: %s", uniqueCharacters or "N/A");
     local lastSeen = string.format("Last Unique Character Seen: %s", GhostCensus.Database.LastCharacterSeen or "N/A")
 
     self.TitleText:SetText(displayTitle);

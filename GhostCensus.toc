@@ -1,9 +1,9 @@
-## Interface: 100105
+## Interface: 100205
 ## Title: |cff3279a8GhostCensus|r
 ## Notes: Cadaverous tools for collecting census data.
 ## Author: Ghost
 ## Version: 1
-## SavedVariables: GhostCensusDB
+## SavedVariables: GhostCensusDB, GhostCensusDBNew
 
 ## RequiredDeps: totalRP3
 
@@ -11,15 +11,21 @@
 
 ## X-Website: https://kivatech.io
 
-GhostCensus.lua
+Libs/LibStub/LibStub.lua
+Libs/AceAddon-3.0/AceAddon-3.0.xml
+Libs/AceDB-3.0/AceDB-3.0.xml
+Libs/LibDeflate/lib.xml
+Libs/LibSerialize/lib.xml
 
-Table/CensusTable.lua
+GhostCensus.lua
 
 Integrations/Integrations.lua
 Integrations/TRP3Data.lua
 
+Core/Enums.lua
 Core/Global.lua
-Core/Database.lua
 Core/SlashCommands.lua
+Core/Database.lua
 Core/EventListener.lua
 Core/DisplayFrame.lua
+Core/Export.lua

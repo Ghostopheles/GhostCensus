@@ -1,82 +1,17 @@
+local Globals = GhostCensus.Globals;
+local Slash = GhostCensus.Slash;
+local Enums = GhostCensus.Enums;
+
 GhostCensus.Database = {};
 
-GhostCensus.Database.Sources = {
-    -- Addon sources
-    CHAT_MSG_ADDON = "ADDON_MSG",
-    CHAT_MSG_ADDON_LOGGED = "ADDON_MSG_LOGGED",
-    TRP3_MAP_SCAN = "TRP3_MAP_SCAN",
-    MSP_EVENT = "MSP_EVENT",
+local COOLDOWN_PERIOD = 300;
+local band = bit.band;
+local bxor = bit.bxor;
 
-    -- Chat event sources
-    CHAT_MSG_SAY = "CHAT_SAY",
-    CHAT_MSG_ACHIEVEMENT = "CHAT_ACHIEVEMENT",
-    CHAT_MSG_CHANNEL_JOIN = "CHAT_CHANNEL_JOIN",
-    CHAT_MSG_CHANNEL_LEAVE = "CHAT_CHANNEL_LEAVE",
-    CHAT_MSG_CHANNEL = "CHAT_CHANNEL",
-    CHAT_MSG_EMOTE = "CHAT_EMOTE",
-    CHAT_MSG_TEXT_EMOTE = "CHAT_TEXT_EMOTE",
-    CHAT_MSG_WHISPER = "CHAT_WHISPER",
-    CHAT_MSG_YELL = "CHAT_YELL",
+local DB = GhostCensus.Database;
 
-    -- Unit event sources
-    UPDATE_MOUSEOVER_UNIT = "MOUSEOVER",
-    NAME_PLATE_UNIT_ADDED = "NAMEPLATE_ADDED",
-
-    -- Combat log event sources
-    COMBAT_LOG_EVENT_UNFILTERED = "COMBAT_LOG",
-};
-
-GhostCensus.Database.Prefixes = {
-    ["TRP3.3"] = "TotalRP3", -- used for TRP3 <-> TRP3 comms
-    ["+RP"] = "CrossRP", -- crossRP
-    RPB1 = "RPB1", -- used for 'hello' pings and map scan requests
-    MSP2 = "MSP2", -- used for comms to/from non-TRP3 users
-};
-
-GhostCensus.Database.Genders = {
-    [1] = "Neutral",
-    [2] = "Male",
-    [3] = "Female",
-};
-
-GhostCensus.Database.Factions = {
-    Alliance = "Alliance",
-    Horde = "Horde",
-    Neutral = "Neutral",
-};
-
-GhostCensus.Database.RaceIDToFaction = {
-    [1] = GhostCensus.Database.Factions.Alliance, -- human
-    [2] = GhostCensus.Database.Factions.Horde, -- orc
-    [3] = GhostCensus.Database.Factions.Alliance, -- dwarf
-    [4] = GhostCensus.Database.Factions.Alliance, -- night elf
-    [5] = GhostCensus.Database.Factions.Horde, -- undead
-    [6] = GhostCensus.Database.Factions.Horde, -- tauren
-    [7] = GhostCensus.Database.Factions.Alliance, -- gnome
-    [8] = GhostCensus.Database.Factions.Horde, -- troll
-    [9] = GhostCensus.Database.Factions.Horde, -- goblin
-    [10] = GhostCensus.Database.Factions.Horde, -- blood elf
-    [11] = GhostCensus.Database.Factions.Alliance, -- draenei
-    [22] = GhostCensus.Database.Factions.Alliance, -- worgen
-    [24] = GhostCensus.Database.Factions.Neutral, -- neutral panda
-    [25] = GhostCensus.Database.Factions.Alliance, -- alliance panda
-    [26] = GhostCensus.Database.Factions.Horde, -- horde panda
-    [27] = GhostCensus.Database.Factions.Horde, -- nightborne
-    [28] = GhostCensus.Database.Factions.Horde, -- highmountain tauren
-    [29] = GhostCensus.Database.Factions.Alliance, -- void elf
-    [30] = GhostCensus.Database.Factions.Alliance, -- lightforged draenei
-    [31] = GhostCensus.Database.Factions.Horde, -- zandalari troll
-    [32] = GhostCensus.Database.Factions.Alliance, -- kul'tiran
-    [34] = GhostCensus.Database.Factions.Alliance, -- dark iron dwarf
-    [35] = GhostCensus.Database.Factions.Horde, -- vulpera
-    [36] = GhostCensus.Database.Factions.Horde, -- mag'har orc
-    [37] = GhostCensus.Database.Factions.Alliance, -- mechagnome
-    [52] = GhostCensus.Database.Factions.Alliance, -- alliance dracthyr
-    [70] = GhostCensus.Database.Factions.Horde, -- horde dracthyr
-};
-
-local defaultMetrics = {
-    Gender = {
+local DEFAULT_METRICS = {
+    Sex = {
         Neutral = 0,
         Male = 0,
         Female = 0,
@@ -127,38 +62,18 @@ local defaultMetrics = {
         Mechagnome = 0,
         Dracthyr = 0,
     },
-    Realm = {},
-}
+    Realms = {},
+    Sources = {},
+    AddonPrefixes = {},
+    UniqueCharacters = 0,
+};
 
-local DB = GhostCensus.Database;
-
-local function slashShowUniqueCharacters()
-    DB:Print("Unique characters seen: " .. DB.data.UniqueCharactersSeen);
+for k, _ in pairs(Enums.Sources) do
+    DEFAULT_METRICS.Sources[k] = 0;
 end
 
-local function slashShowDB(target)
-    if not IsAddOnLoaded("Blizzard_DebugTools") then
-        local success, result = LoadAddOn("Blizzard_DebugTools");
-        assert(success, "Failed to load Blizzard_DebugTools: " .. (result or "Error N/A"))
-    end
-
-    if not target then
-        local name, realm = UnitFullName("target");
-        if not name then return; end
-        if not realm then realm = GetNormalizedRealmName(); end
-        target = name .. "-" .. realm;
-    end
-
-    DisplayTableInspectorWindow(DB.data[target]);
-end
-
-local function slashShowDBMetrics()
-    if not IsAddOnLoaded("Blizzard_DebugTools") then
-        local success, result = LoadAddOn("Blizzard_DebugTools");
-        assert(success, "Failed to load Blizzard_DebugTools: " .. (result or "Error N/A"))
-    end
-
-    DisplayTableInspectorWindow(DB.data.Metrics);
+for k, _ in pairs(Enums.AddonMessagePrefixes) do
+    DEFAULT_METRICS.AddonPrefixes[k] = 0;
 end
 
 local function slashClearDB(commit)
@@ -175,85 +90,107 @@ function DB:Print(...)
 end
 
 function DB:Init()
-    self.data = GhostCensusDB;
-    self.data.UniqueCharactersSeen = self.data.UniqueCharactersSeen or 0;
-    self.data.SourcesCount = self.data.SourcesCount or {};
-    self.data.Metrics = self.data.Metrics or defaultMetrics;
+    if not Globals then
+        Globals = GhostCensus.Globals;
+    end
+
+    self.data = CopyTable(GhostCensusDB);
+    self.data.Metrics = self.data.Metrics or DEFAULT_METRICS;
     self.LastCharacterSeen = nil;
 
-    for k, _ in pairs(self.Sources) do
-        if type(self.data.SourcesCount[k]) ~= "number" then
-            if k ~= "ADDON_PREFIXES" then
-                self.data.SourcesCount[k] = 0;
-            end
-        end
-    end
+    Slash:RegisterCommand("wipe", slashClearDB);
 
-    if not self.data.SourcesCount.ADDON_PREFIXES or type(self.data.SourcesCount.ADDON_PREFIXES) ~= "table" then
-        local addonPrefixes = {};
-        for prefix, _ in pairs(self.Prefixes) do
-            addonPrefixes[prefix] = 0;
-        end
-        self.data.SourcesCount.ADDON_PREFIXES = addonPrefixes;
-    end
-
-    GhostCensus.Slash:RegisterCommand("show", slashShowDB);
-    GhostCensus.Slash:RegisterCommand("wipe", slashClearDB);
-    GhostCensus.Slash:RegisterCommand("count", slashShowUniqueCharacters);
-    GhostCensus.Slash:RegisterCommand("metrics", slashShowDBMetrics);
+    self:Print("Database loaded.");
 end
 
-function DB:AddPlayerEntryByGUID(guid, source, customDatasheet, customDatasheetName, timestamp)
-    if not guid or GhostCensus.UnitGUIDIsCurrentPlayer(guid) or not C_PlayerInfo.GUIDIsPlayer(guid) then
-        return;
+--- do not ask about this section, I have no answers for you
+
+local ID_CHARS_UPPER = {};
+for i=65, 90 do
+	tinsert(ID_CHARS_UPPER, strchar(i));
+end
+
+local ID_CHARS_LOWER = {};
+for i=97, 122 do
+	tinsert(ID_CHARS_LOWER, strchar(i));
+end
+
+local function mul(x, y)
+	return (band(x, 0xffff) * y) + (band(floor(x / 65536) * y, 0xffff) * 65536);
+end
+
+--- FNV1A hash function stolen from TRP3, but modified to be an abomination
+function DB:GenerateHash(str)
+    local hash = 0x811c9dc5;
+
+    for i = 1, #str do
+        local b = strbyte(str, i);
+        hash = bxor(hash, b);
+        hash = mul(hash, 0x01000193);
     end
 
-    local localPlayerName, localPlayerRealm = UnitName("player"), GetNormalizedRealmName();
-    if not localPlayerRealm then
+    hash = bit.arshift(hash, 0);
+    if hash < 0 then
+        local strHash = tostring(hash);
+        local first, last = strHash:sub(2, 2), strHash:sub(-1, -1);
+        local replacement = (tonumber(first) + tonumber(last)) / 2;
+        replacement = Clamp(replacement, 1, 9);
+        local altered = strHash:gsub("-", replacement);
+        ---@diagnostic disable-next-line: cast-local-type
+        hash = tonumber(altered);
+    end
+    return hash;
+end
+
+--- All arguments must be non-nil and not an empty string
+function DB:Validate(...)
+    for i=1, select("#", ...) do
+        local value = select(i, ...);
+        if not value or value == "" then
+            return false;
+        end
+    end
+
+    return true;
+end
+
+function DB:AddPlayerEntryByGUID(guid, source)
+    if not guid or not C_PlayerInfo.GUIDIsPlayer(guid) or GhostCensus.UnitGUIDIsCurrentPlayer(guid) then
         return;
     end
 
     local _, class, _, race, sex, name, realm = GetPlayerInfoByGUID(guid);
 
-    if not name then
+    if not self:Validate(class, race, sex, name) then
         return;
     end
 
-    if not realm or realm == "" then
-        realm = localPlayerRealm;
+    if not self:Validate(realm) then
+        realm = Globals.PlayerRealm;
     end
 
     local normalizedPlayerName = name .. "-" .. realm;
-    if normalizedPlayerName == localPlayerName .. "-" .. localPlayerRealm then
+    local playerHash = self:GenerateHash(normalizedPlayerName .. guid);
+    local entry = self.data[playerHash] or {};
+
+    local timestamp = GetServerTime();
+    if entry.Timestamp and (timestamp - entry.Timestamp) < COOLDOWN_PERIOD then
         return;
     end
 
-    local playerDataEntry = self.data[normalizedPlayerName] or {};
+    entry.Timestamp = timestamp;
+    entry.Sex = Enums.Sex[sex];
+    entry.Race = race;
+    entry.Class = class;
+    entry.Realm = realm;
 
-    if timestamp then
-        if playerDataEntry.Timestamp and (timestamp - playerDataEntry.Timestamp) < 60 then
-            return;
-        end
-        playerDataEntry.Timestamp = timestamp;
-    end
-
-    playerDataEntry.TimesSeen = (playerDataEntry.TimesSeen or 0) + 1;
-    playerDataEntry.GUID = guid;
-    playerDataEntry.Sex = self.Genders[sex];
-    playerDataEntry.Race = race;
-    playerDataEntry.Class = class;
-
-    if customDatasheet then
-        playerDataEntry[customDatasheetName] = customDatasheet;
-    end
-
-    local TRP3DataSheet = GhostCensus.Integrations.TRP3.DataGatherer:GenerateTRP3DataSheet(guid);
+    local TRP3DataSheet = GhostCensus.TRP3:GenerateDataSheet(guid);
 
     if TRP3DataSheet then
-        playerDataEntry["TRP3Data"] = TRP3DataSheet;
+        entry["RPData"] = TRP3DataSheet;
     end
 
-    if self:IsNew(normalizedPlayerName) then
+    if self:IsNew(playerHash) then
         self:CountUniquePlayer();
         local faction = self:GetPlayerFactionFromGUID(guid);
         self:CountMetrics(class, race, sex, realm, faction);
@@ -261,94 +198,54 @@ function DB:AddPlayerEntryByGUID(guid, source, customDatasheet, customDatasheetN
     end
 
     self:CountSource(source);
-    self.data[normalizedPlayerName] = playerDataEntry;
-    self:Commit();
-end
-
-function DB:AddDataToPlayerEntryByName(playerName, source, customDatasheet, customDatasheetName)
-    local localPlayerName, localPlayerRealm = UnitName("player"), GetNormalizedRealmName();
-    if not localPlayerRealm then
-        return;
-    end
-
-    if playerName == localPlayerName .. "-" .. localPlayerRealm then
-        return;
-    end
-
-    if self:IsNew(playerName) then
-        self:CountUniquePlayer();
-        self.LastCharacterSeen = playerName;
-    end
-
-    local playerDataEntry = self.data[playerName] or {};
-    playerDataEntry.TimesSeen = (playerDataEntry.TimesSeen or 0) + 1;
-
-    playerDataEntry[customDatasheetName] = customDatasheet;
-
-    self:CountSource(source);
-    self.data[playerName] = playerDataEntry;
-    self:Commit();
-end
-
-function DB:AddShallowPlayerEntry(playerName, source, addonMessagePrefix)
-    if GhostCensus.UnitNameIsCursed(playerName) or playerName == "" then
-        return;
-    end
-
-    local playerDataEntry = self.data[playerName];
-
-    if playerDataEntry then
-        playerDataEntry.TimesSeen = (playerDataEntry.TimesSeen or 0) + 1;
-    else
-        playerDataEntry = {};
-        playerDataEntry.TimesSeen = 1;
-        self:CountUniquePlayer();
-        self.LastCharacterSeen = playerName;
-    end
-
-    if addonMessagePrefix then
-        self:CountAddonMessagePrefix(addonMessagePrefix);
-    end
-
-    self:CountSource(source);
-    self.data[playerName] = playerDataEntry;
+    self.data[playerHash] = entry;
     self:Commit();
 end
 
 function DB:GetPlayerFactionFromGUID(playerGUID)
     local raceID = C_PlayerInfo.GetRace({guid = playerGUID});
-    local faction = self.RaceIDToFaction[raceID];
+    local faction = Enums.RaceIDToFaction[raceID];
     return faction;
 end
 
 function DB:CountAddonMessagePrefix(prefix)
-    self.data.SourcesCount.ADDON_PREFIXES[prefix] = (self.data.SourcesCount.ADDON_PREFIXES[prefix] or 0) + 1;
+    if not Enums.AddonMessagePrefixes[prefix] then
+        return;
+    end
+
+    self.data.Metrics.AddonPrefixes[prefix] = (self.data.Metrics.AddonPrefixes[prefix] or 0) + 1;
+    self:Commit();
 end
 
 function DB:CountSource(source)
-    self.data.SourcesCount[source] = (self.data.SourcesCount[source] or 0) + 1;
-
-    if source == "TRP3_MAP_SCAN" then
-        self.data.SourcesCount.CHAT_MSG_ADDON = self.data.SourcesCount.CHAT_MSG_ADDON - 1;
+    if not Enums.Sources[source] then
+        return;
     end
+
+    self.data.Metrics.Sources[source] = (self.data.Metrics.Sources[source] or 0) + 1;
+    self:Commit();
 end
 
 function DB:CountUniquePlayer()
-    self.data.UniqueCharactersSeen = (self.data.UniqueCharactersSeen or 0) + 1;
+    self.data.Metrics.UniqueCharacters = (self.data.Metrics.UniqueCharacters or 0) + 1;
+    self:Commit();
 end
 
 function DB:CountMetrics(class, race, sex, realm, faction)
-    self.data.Metrics.Class[class] = (self.data.Metrics.Class[class] or 0) + 1;
-    self.data.Metrics.Race[race] = (self.data.Metrics.Race[race] or 0) + 1;
+    local metrics = self.data.Metrics;
 
-    local gender = self.Genders[sex];
-    self.data.Metrics.Gender[gender] = (self.data.Metrics.Gender[gender] or 0) + 1;
-    self.data.Metrics.Realm[realm] = (self.data.Metrics.Realm[realm] or 0) + 1;
-    self.data.Metrics.Faction[faction] = (self.data.Metrics.Faction[faction] or 0) + 1;
+    metrics.Class[class] = (metrics.Class[class] or 0) + 1;
+    metrics.Race[race] = (metrics.Race[race] or 0) + 1;
+    metrics.Sex[sex] = (metrics.Sex[sex] or 0) + 1;
+    metrics.Realms[realm] = (metrics.Realms[realm] or 0) + 1;
+    metrics.Faction[faction] = (metrics.Faction[faction] or 0) + 1;
+
+    self.data.Metrics = metrics;
+    self:Commit();
 end
 
-function DB:IsNew(playerName)
-    return self.data[playerName] == nil;
+function DB:IsNew(playerHash)
+    return self.data[playerHash] == nil;
 end
 
 function DB:Commit()
@@ -365,16 +262,3 @@ function DB:Wipe(commit)
         self:Print("Session table wiped.");
     end
 end
-
-local loadHandler = CreateFrame("Frame");
-loadHandler:RegisterEvent("PLAYER_ENTERING_WORLD");
-loadHandler:SetScript("OnEvent", function(self, event, ...)
-    if event == "PLAYER_ENTERING_WORLD" then
-        local isInitialLogin, _ = ...;
-        DB:Init();
-
-        if isInitialLogin then
-            DB:Print("Database loaded.");
-        end
-    end
-end);
