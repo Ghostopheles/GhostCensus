@@ -1,21 +1,15 @@
-## Interface: 100205
+## Interface: 100207
 ## Title: |cff3279a8GhostCensus|r
 ## Notes: Cadaverous tools for collecting census data.
 ## Author: Ghost
 ## Version: 1
-## SavedVariables: GhostCensusDB, GhostCensusDBNew
+## SavedVariables: GhostCensusDB
 
 ## RequiredDeps: totalRP3
 
 ## IconTexture: Interface\AddOns\totalRP3\Resources\policegar
 
-## X-Website: https://kivatech.io
-
-Libs/LibStub/LibStub.lua
-Libs/AceAddon-3.0/AceAddon-3.0.xml
-Libs/AceDB-3.0/AceDB-3.0.xml
-Libs/LibDeflate/lib.xml
-Libs/LibSerialize/lib.xml
+## X-Website: https://ghst.tools
 
 GhostCensus.lua
 
