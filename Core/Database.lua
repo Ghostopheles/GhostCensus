@@ -100,6 +100,8 @@ function DB:Init()
 
     Slash:RegisterCommand("wipe", slashClearDB);
 
+    GhostCensus.RP.EventRegistry:RegisterCallback(GhostCensus.RP.Events.RP_DATA_UPDATED, self.UpdateRPDataForPlayerEntry, self);
+
     self:Print("Database loaded.");
 end
 
@@ -184,10 +186,10 @@ function DB:AddPlayerEntryByGUID(guid, source)
     entry.Class = class;
     entry.Realm = realm;
 
-    local TRP3DataSheet = GhostCensus.TRP3:GenerateDataSheet(guid);
+    local RPDataSheet = GhostCensus.RP:GenerateDatasheet(normalizedPlayerName, guid);
 
-    if TRP3DataSheet then
-        entry["RPData"] = TRP3DataSheet;
+    if RPDataSheet then
+        entry["RPData"] = RPDataSheet;
     end
 
     if self:IsNew(playerHash) then
@@ -198,6 +200,20 @@ function DB:AddPlayerEntryByGUID(guid, source)
     end
 
     self:CountSource(source);
+    self.data[playerHash] = entry;
+    self:Commit();
+end
+
+function DB:UpdateRPDataForPlayerEntry(playerName, guid)
+    local playerHash = self:GenerateHash(playerName .. guid);
+    local entry = self.data[playerHash];
+    if not entry then
+        return;
+    end
+
+    local datasheet = GhostCensus.RP:GenerateDatasheet(playerName);
+    entry["RPData"] = datasheet;
+
     self.data[playerHash] = entry;
     self:Commit();
 end

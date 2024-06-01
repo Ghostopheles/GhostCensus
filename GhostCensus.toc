@@ -19,8 +19,7 @@ Libs/LibSerialize/lib.xml
 
 GhostCensus.lua
 
-Integrations/Integrations.lua
-Integrations/TRP3Data.lua
+Integrations/RPData.lua
 
 Core/Enums.lua
 Core/Global.lua
