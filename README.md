@@ -6,25 +6,13 @@ Here's what it collects:
 - Class
 - Race
 - Gender
-- Name
 - Realm
-- GUID
 
-On top of the things listed above, when used alongside TotalRP3, it also collects some data about the player's RP profile:
-- ProfileID (Used for looking up profiles in the directory)
-- CharacterID (CharacterName-RealmName)
-- Roleplay Status
-- Formatted Name (Full RP name with color codes)
-- First Name
-- Last Name
-- Short Title
-- Full Title
-- Roleplay Experience Level
-- Custom Pronouns
-- Profile Icon
-- Custom Guild
-- Voice Reference
-- Trial Account Status (Paid sub vs trial character)
+On top of the things listed above, when used alongside TotalRP3, it also collects some usage data on the custom profile fields:
+- Usage of the custom voice reference field
+- Usage of the custom guild field
+- Usage of the custom pronouns field
+- Profile icon name
 
 This addon was used to collect population data at Tournament of Ages 2023 on MoonGuard.
 
@@ -34,4 +22,4 @@ Includes a few slash commands as well:
 - `/gcs count`: Prints the number of unique characters you've seen.
 - `/gcs metrics`: Opens a tinspect window the `Metrics` table, which holds non-identifying class, race, sex, and realm numbers.
 
-**NOTE**: I will not be providing support for this addon, it's up to you to figure out how to use it and alter it for your own use case. (Though I might make some exceptions)
+**NOTE**: I will not be providing support for this addon, it's up to you to figure out how to use it and alter it for your own use case.
