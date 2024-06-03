@@ -186,6 +186,10 @@ function DB:AddPlayerEntryByGUID(guid, source)
     entry.Class = class;
     entry.Realm = realm;
 
+    if entry.IsTimerunner == nil then
+        entry.IsTimerunner = C_ChatInfo.IsTimerunningPlayer(guid);
+    end
+
     local RPDataSheet = GhostCensus.RP:GenerateDatasheet(normalizedPlayerName, guid);
 
     if RPDataSheet then
