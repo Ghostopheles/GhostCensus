@@ -144,6 +144,19 @@ function DB:GenerateHash(str)
     return hash;
 end
 
+--- TODO: remember to switch to this when data collection is done
+function DB:GenerateHashNew(str)
+    local prime = 16777619;
+    local hash = 2166136261;
+
+    for i = 1, #str do
+        hash = bit.bxor(hash, str:byte(i));
+        hash = bit.band((hash * prime), 0xFFFFFFFF);
+    end
+
+    return string.format("%08x", hash);
+end
+
 --- All arguments must be non-nil and not an empty string
 function DB:Validate(...)
     for i=1, select("#", ...) do
@@ -196,6 +209,11 @@ function DB:AddPlayerEntryByGUID(guid, source)
         entry["RPData"] = RPDataSheet;
     end
 
+    local unitToken = UnitTokenFromGUID(guid);
+    if unitToken then
+        GhostCensus.Transmog.PollOutfitForUnit(unitToken);
+    end
+
     if self:IsNew(playerHash) then
         self:CountUniquePlayer();
         local faction = self:GetPlayerFactionFromGUID(guid);
@@ -217,6 +235,31 @@ function DB:UpdateRPDataForPlayerEntry(playerName, guid)
 
     local datasheet = GhostCensus.RP:GenerateDatasheet(playerName);
     entry["RPData"] = datasheet;
+
+    self.data[playerHash] = entry;
+    self:Commit();
+end
+
+function DB:UpdateTransmogForPlayer(guid, transmogData)
+    local _, class, _, race, sex, name, realm = GetPlayerInfoByGUID(guid);
+
+    if not self:Validate(class, race, sex, name) then
+        return;
+    end
+
+    if not self:Validate(realm) then
+        realm = Globals.PlayerRealm;
+    end
+
+    local normalizedPlayerName = name .. "-" .. realm;
+
+    local playerHash = self:GenerateHash(normalizedPlayerName .. guid);
+    local entry = self.data[playerHash];
+    if not entry then
+        return;
+    end
+
+    entry["Transmog"] = transmogData;
 
     self.data[playerHash] = entry;
     self:Commit();

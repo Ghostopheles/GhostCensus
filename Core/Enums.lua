@@ -73,4 +73,6 @@ GhostCensus.Enums.RaceIDToFaction = {
     [37] = GhostCensus.Enums.Factions.Alliance, -- mechagnome
     [52] = GhostCensus.Enums.Factions.Alliance, -- alliance dracthyr
     [70] = GhostCensus.Enums.Factions.Horde, -- horde dracthyr
+    [84] = GhostCensus.Enums.Factions.Horde, -- horde earthen dwarf
+    [85] = GhostCensus.Enums.Factions.Alliance -- alliance earthen dwarf
 };

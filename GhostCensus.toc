@@ -14,6 +14,9 @@
 GhostCensus.lua
 
 Integrations/RPData.lua
+Integrations/Transmog/Templates.xml
+Integrations/Transmog/Transmog.lua
+
 
 Core/Enums.lua
 Core/Global.lua
@@ -21,4 +24,3 @@ Core/SlashCommands.lua
 Core/Database.lua
 Core/EventListener.lua
 Core/DisplayFrame.lua
-Core/Export.lua
