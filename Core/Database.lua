@@ -105,47 +105,7 @@ function DB:Init()
     self:Print("Database loaded.");
 end
 
---- do not ask about this section, I have no answers for you
-
-local ID_CHARS_UPPER = {};
-for i=65, 90 do
-	tinsert(ID_CHARS_UPPER, strchar(i));
-end
-
-local ID_CHARS_LOWER = {};
-for i=97, 122 do
-	tinsert(ID_CHARS_LOWER, strchar(i));
-end
-
-local function mul(x, y)
-	return (band(x, 0xffff) * y) + (band(floor(x / 65536) * y, 0xffff) * 65536);
-end
-
---- FNV1A hash function stolen from TRP3, but modified to be an abomination
 function DB:GenerateHash(str)
-    local hash = 0x811c9dc5;
-
-    for i = 1, #str do
-        local b = strbyte(str, i);
-        hash = bxor(hash, b);
-        hash = mul(hash, 0x01000193);
-    end
-
-    hash = bit.arshift(hash, 0);
-    if hash < 0 then
-        local strHash = tostring(hash);
-        local first, last = strHash:sub(2, 2), strHash:sub(-1, -1);
-        local replacement = (tonumber(first) + tonumber(last)) / 2;
-        replacement = Clamp(replacement, 1, 9);
-        local altered = strHash:gsub("-", replacement);
-        ---@diagnostic disable-next-line: cast-local-type
-        hash = tonumber(altered);
-    end
-    return hash;
-end
-
---- TODO: remember to switch to this when data collection is done
-function DB:GenerateHashNew(str)
     local prime = 16777619;
     local hash = 2166136261;
 
