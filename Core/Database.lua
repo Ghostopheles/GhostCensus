@@ -5,8 +5,6 @@ local Enums = GhostCensus.Enums;
 GhostCensus.Database = {};
 
 local COOLDOWN_PERIOD = 300;
-local band = bit.band;
-local bxor = bit.bxor;
 
 local DB = GhostCensus.Database;
 
