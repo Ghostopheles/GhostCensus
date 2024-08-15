@@ -7,6 +7,7 @@ Here's what it collects:
 - Race
 - Gender
 - Realm
+- Transmog
 
 On top of the things listed above, when used alongside TotalRP3, it also collects some usage data on the custom profile fields:
 - Usage of the custom voice reference field
