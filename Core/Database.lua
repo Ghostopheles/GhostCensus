@@ -48,7 +48,9 @@ local DEFAULT_METRICS = {
         BloodElf = 0,
         Draenei = 0,
         Worgen = 0,
-        Pandaren = 0,
+        Pandaren_A = 0,
+        Pandaren_H = 0,
+        Pandaren_N = 0,
         Nightborne = 0,
         HighmountainTauren = 0,
         VoidElf = 0,
@@ -58,7 +60,10 @@ local DEFAULT_METRICS = {
         DarkIronDwarf = 0,
         MagharOrc = 0,
         Mechagnome = 0,
-        Dracthyr = 0,
+        Dracthyr_A = 0,
+        Dracthyr_H = 0,
+        Earthen_A = 0,
+        Earthen_H = 0,
     },
     Realms = {},
     Sources = {},
@@ -157,14 +162,10 @@ function DB:AddPlayerEntryByGUID(guid, source)
     entry.Class = class;
     entry.Realm = realm;
 
-    if entry.IsTimerunner == nil then
-        entry.IsTimerunner = C_ChatInfo.IsTimerunningPlayer(guid);
-    end
-
     local RPDataSheet = GhostCensus.RP:GenerateDatasheet(normalizedPlayerName, guid);
 
     if RPDataSheet then
-        entry["RPData"] = RPDataSheet;
+        entry.RPData = RPDataSheet;
     end
 
     local unitToken = UnitTokenFromGUID(guid);
@@ -173,13 +174,13 @@ function DB:AddPlayerEntryByGUID(guid, source)
     end
 
     if self:IsNew(playerHash) then
+        self:CountSource(source);
         self:CountUniquePlayer();
         local faction = self:GetPlayerFactionFromGUID(guid);
         self:CountMetrics(class, race, sex, realm, faction);
         self.LastCharacterSeen = normalizedPlayerName;
     end
 
-    self:CountSource(source);
     self.data[playerHash] = entry;
     self:Commit();
 end
@@ -192,7 +193,7 @@ function DB:UpdateRPDataForPlayerEntry(playerName, guid)
     end
 
     local datasheet = GhostCensus.RP:GenerateDatasheet(playerName);
-    entry["RPData"] = datasheet;
+    entry.RPData = datasheet;
 
     self.data[playerHash] = entry;
     self:Commit();
@@ -252,8 +253,21 @@ function DB:CountUniquePlayer()
     self:Commit();
 end
 
+function DB:ShouldAppendFactionToRace(raceName)
+    return raceName == "Dracthyr" or raceName == "Earthen";
+end
+
+function DB:GetFactionTagForFaction(faction)
+    return "_" .. strsub(faction, 1, 1);
+end
+
 function DB:CountMetrics(class, race, sex, realm, faction)
     local metrics = self.data.Metrics;
+
+    if self:ShouldAppendFactionToRace(race) then
+        local tag = self:GetFactionTagForFaction(faction);
+        race = race .. tag;
+    end
 
     metrics.Class[class] = (metrics.Class[class] or 0) + 1;
     metrics.Race[race] = (metrics.Race[race] or 0) + 1;
