@@ -1,4 +1,4 @@
-## Interface: 110002
+## Interface: 110107
 ## Title: |cff3279a8GhostCensus|r
 ## Notes: Cadaverous tools for collecting census data.
 ## Author: Ghost
