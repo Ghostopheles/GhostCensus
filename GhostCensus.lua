@@ -85,10 +85,9 @@ end
 
 EventUtil.ContinueOnAddOnLoaded(addonName, InitSavedVars);
 
-function GhostCensus.HasCharacterBeenLogged(unitName, realm, guid)
+function GhostCensus.HasCharacterBeenLogged(guid)
     local db = GhostCensus.Database;
-    local hash = db:GenerateHash(format("%s-%s%s", unitName, realm, guid));
-    return not db:IsNew(hash);
+    return not db:IsNew(guid);
 end
 
 function GhostCensus.HasUnitBeenLogged(unit)
@@ -100,13 +99,7 @@ function GhostCensus.HasUnitBeenLogged(unit)
     end
 
     local db = GhostCensus.Database;
-    local name, realm = UnitFullName(unit);
-    if not realm or realm == "" then
-        realm = GetNormalizedRealmName();
-    end
+    local guid = UnitGUID(unit);
 
-    local id = format("%s-%s%s", name, realm, UnitGUID(unit));
-    local hash = db:GenerateHash(id);
-
-    return not db:IsNew(hash);
+    return not db:IsNew(guid);
 end

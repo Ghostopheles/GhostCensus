@@ -47,18 +47,6 @@ function DB:Init()
     self:Print("Database loaded.");
 end
 
-function DB:GenerateHash(str)
-    local prime = 16777619;
-    local hash = 2166136261;
-
-    for i = 1, #str do
-        hash = bit.bxor(hash, str:byte(i));
-        hash = bit.band((hash * prime), 0xFFFFFFFF);
-    end
-
-    return string.format("%08x", hash);
-end
-
 --- All arguments must be non-nil and not an empty string
 function DB:Validate(...)
     for i=1, select("#", ...) do
@@ -87,8 +75,7 @@ function DB:AddPlayerEntryByGUID(guid, source)
     end
 
     local normalizedPlayerName = name .. "-" .. realm;
-    local playerHash = self:GenerateHash(normalizedPlayerName .. guid);
-    local entry = self.data[playerHash] or {};
+    local entry = self.data[guid] or {};
 
     local timestamp = GetServerTime();
     if entry.Timestamp and (timestamp - entry.Timestamp) < COOLDOWN_PERIOD then
@@ -112,7 +99,7 @@ function DB:AddPlayerEntryByGUID(guid, source)
         GhostCensus.Transmog.PollOutfitForUnit(unitToken);
     end
 
-    if self:IsNew(playerHash) then
+    if self:IsNew(guid) then
         self:CountSource(source);
         self:CountUniquePlayer();
         local faction = self:GetPlayerFactionFromGUID(guid);
@@ -120,13 +107,12 @@ function DB:AddPlayerEntryByGUID(guid, source)
         self.LastCharacterSeen = normalizedPlayerName;
     end
 
-    self.data[playerHash] = entry;
+    self.data[guid] = entry;
     self:Commit();
 end
 
 function DB:UpdateRPDataForPlayerEntry(playerName, guid)
-    local playerHash = self:GenerateHash(playerName .. guid);
-    local entry = self.data[playerHash];
+    local entry = self.data[guid];
     if not entry then
         return;
     end
@@ -134,7 +120,7 @@ function DB:UpdateRPDataForPlayerEntry(playerName, guid)
     local datasheet = GhostCensus.RP:GenerateDatasheet(playerName);
     entry.RPData = datasheet;
 
-    self.data[playerHash] = entry;
+    self.data[guid] = entry;
     self:Commit();
 end
 
@@ -149,17 +135,14 @@ function DB:UpdateTransmogForPlayer(guid, transmogData)
         realm = Globals.PlayerRealm;
     end
 
-    local normalizedPlayerName = name .. "-" .. realm;
-
-    local playerHash = self:GenerateHash(normalizedPlayerName .. guid);
-    local entry = self.data[playerHash];
+    local entry = self.data[guid];
     if not entry then
         return;
     end
 
     entry["Transmog"] = transmogData;
 
-    self.data[playerHash] = entry;
+    self.data[guid] = entry;
     self:Commit();
 end
 
@@ -193,7 +176,7 @@ function DB:CountUniquePlayer()
 end
 
 function DB:ShouldAppendFactionToRace(raceName)
-    return raceName == "Dracthyr" or raceName == "Earthen";
+    return raceName == "Dracthyr" or raceName == "Earthen" or raceName == "Pandaren";
 end
 
 function DB:GetFactionTagForFaction(faction)
@@ -218,8 +201,8 @@ function DB:CountMetrics(class, race, sex, realm, faction)
     self:Commit();
 end
 
-function DB:IsNew(playerHash)
-    return self.data[playerHash] == nil;
+function DB:IsNew(guid)
+    return self.data[guid] == nil;
 end
 
 function DB:Commit()
