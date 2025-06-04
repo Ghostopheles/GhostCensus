@@ -75,15 +75,11 @@ local DEFAULT_METRICS = {
 };
 GhostCensus.DEFAULT_METRICS = DEFAULT_METRICS;
 
-local function InitSavedVars()
-    if not GhostCensusDB then
-        GhostCensusDB = {
-            Metrics = CopyTable(DEFAULT_METRICS),
-        };
-    end
+if not GhostCensusDB then
+    GhostCensusDB = {
+        Metrics = CopyTable(DEFAULT_METRICS),
+    };
 end
-
-EventUtil.ContinueOnAddOnLoaded(addonName, InitSavedVars);
 
 function GhostCensus.HasCharacterBeenLogged(guid)
     local db = GhostCensus.Database;

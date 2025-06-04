@@ -4,6 +4,7 @@
 ## Author: Ghost
 ## Version: 1
 ## SavedVariables: GhostCensusDB
+## LoadSavedVariablesFirst: 1
 
 ## RequiredDeps: totalRP3
 
