@@ -176,7 +176,7 @@ function DB:CountUniquePlayer()
 end
 
 function DB:ShouldAppendFactionToRace(raceName)
-    return raceName == "Dracthyr" or raceName == "Earthen" or raceName == "Pandaren";
+    return raceName == "Dracthyr" or raceName == "EarthenDwarf" or raceName == "Pandaren";
 end
 
 function DB:GetFactionTagForFaction(faction)

@@ -69,7 +69,7 @@ function GhostCensus.Display:Update()
     local displayTitle = "|cff3279a8GhostCensus|r"
     local uniqueCharacters = self.DB.Metrics.UniqueCharacters;
 
-    local displayString = string.format("Unique Characters Seen: %s", uniqueCharacters or "N/A");
+    local displayString = string.format("Unique Characters Seen: %s", BreakUpLargeNumbers(uniqueCharacters) or "N/A");
     local lastSeen = string.format("Last Unique Character Seen: %s", GhostCensus.Database.LastCharacterSeen or "N/A")
 
     self.TitleText:SetText(displayTitle);

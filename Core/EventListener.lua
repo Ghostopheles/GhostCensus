@@ -1,8 +1,10 @@
 local DB = GhostCensus.Database;
 local Enums = GhostCensus.Enums;
 
+local ICECROWN_UIMAPID = 118;
+
 local EventListener = CreateFrame("Frame");
-EventListener.LoggingEnabled = true
+EventListener.LoggingEnabled = true;
 
 function EventListener:Print(...)
     if not self.LoggingEnabled then
@@ -74,6 +76,10 @@ function EventListener:IsValidPrefix(prefix)
 end
 
 function EventListener:OnEvent(event, ...)
+    --if C_Map.GetBestMapForUnit("player") ~= ICECROWN_UIMAPID then
+    --    return; -- Ignore events outside of Icecrown
+    --end
+
     if event == "PLAYER_FLAGS_CHANGED" and (... == "player") then
         if UnitIsAFK("player") then
             FlashClientIcon();
